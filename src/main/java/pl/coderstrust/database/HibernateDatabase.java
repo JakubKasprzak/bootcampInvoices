@@ -3,18 +3,21 @@ package pl.coderstrust.database;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.domain.Example;
-import pl.coderstrust.database.hibernate.HibernateInvoice;
-import pl.coderstrust.database.hibernate.HibernateModelMapper;
-import pl.coderstrust.database.hibernate.InvoiceRepository;
+import org.springframework.stereotype.Repository;
+import pl.coderstrust.database.sql.InvoiceRepository;
+import pl.coderstrust.database.sql.SQLModelMapper;
 import pl.coderstrust.model.Invoice;
 
+@Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
 public class HibernateDatabase implements Database {
     private final InvoiceRepository invoiceRepository;
-    private final HibernateModelMapper modelMapper;
+    private final SQLModelMapper modelMapper;
 
-    public HibernateDatabase(InvoiceRepository invoiceRepository, HibernateModelMapper modelMapper) {
+    public HibernateDatabase(InvoiceRepository invoiceRepository, SQLModelMapper modelMapper) {
         if (invoiceRepository == null) {
             throw new IllegalArgumentException("Database is empty.");
         }
@@ -31,7 +34,7 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException("Invoice cannot be null.");
         }
         try {
-            HibernateInvoice savedInvoice = invoiceRepository.save(modelMapper.mapToHibernateInvoice(invoice));
+             pl.coderstrust.database.sql.Invoice savedInvoice = invoiceRepository.save(modelMapper.mapToSQLInvoice(invoice));
             return modelMapper.mapToInvoice(savedInvoice);
         } catch (NonTransientDataAccessException e) {
             throw new DatabaseOperationException("An error occurred during saving invoice.", e);
@@ -59,7 +62,7 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException("Id cannot be null.");
         }
         try {
-            Optional<HibernateInvoice> invoice = invoiceRepository.findById(id);
+            Optional< pl.coderstrust.database.sql.Invoice> invoice = invoiceRepository.findById(id);
             if (invoice.isPresent()) {
                 return Optional.of(modelMapper.mapToInvoice(invoice.get()));
             }
@@ -75,8 +78,8 @@ public class HibernateDatabase implements Database {
             throw new IllegalArgumentException("Number cannot be null.");
         }
         try {
-            Example<HibernateInvoice> example = Example.of(modelMapper.mapToHibernateInvoice(new Invoice.Builder().withNumber(number).build()));
-            Optional<HibernateInvoice> invoice = invoiceRepository.findOne(example);
+            Example< pl.coderstrust.database.sql.Invoice> example = Example.of(modelMapper.mapToSQLInvoice(new Invoice.Builder().withNumber(number).build()));
+            Optional< pl.coderstrust.database.sql.Invoice> invoice = invoiceRepository.findOne(example);
             if (invoice.isPresent()) {
                 return Optional.of(modelMapper.mapToInvoice(invoice.get()));
             }

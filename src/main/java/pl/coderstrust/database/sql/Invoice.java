@@ -1,4 +1,4 @@
-package pl.coderstrust.database.hibernate;
+package pl.coderstrust.database.sql;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import pl.coderstrust.model.Company;
+import pl.coderstrust.model.InvoiceEntry;
 
 @Entity
 @Table(name = "invoice")
