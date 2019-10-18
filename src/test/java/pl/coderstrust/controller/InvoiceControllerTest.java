@@ -59,7 +59,7 @@ class InvoiceControllerTest {
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
 
         //When
-        mockMvc.perform(get(String.format("%s%d",url,invoiceToGet.getId()))
+        mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
             .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isForbidden());
 
@@ -364,7 +364,7 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
-
+        doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
@@ -383,7 +383,7 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
-
+        doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)

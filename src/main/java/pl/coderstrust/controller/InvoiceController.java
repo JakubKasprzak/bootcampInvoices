@@ -45,10 +45,10 @@ public class InvoiceController {
         @ApiResponse(code = 201, message = "Created", response = Invoice.class),
         @ApiResponse(code = 400, message = "Bad request"),
         @ApiResponse(code = 406, message = "Not acceptable format"),
-        @ApiResponse(code = 409, message = "Invoice exists"),
+        @ApiResponse(code = 409, message = "HibernateInvoice exists"),
         @ApiResponse(code = 500, message = "Internal server error")
     })
-    @ApiImplicitParam(required = true, name = "invoice", value = "New invoice data", dataType = "Invoice")
+    @ApiImplicitParam(required = true, name = "invoice", value = "New invoice data", dataType = "HibernateInvoice")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> add(@RequestBody(required = false) Invoice invoice) {
         if (invoice == null) {
@@ -69,13 +69,13 @@ public class InvoiceController {
     @ApiOperation(value = "Update invoice", notes = "Update invoice with provided id", response = Invoice.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "Updated", response = Invoice.class),
-        @ApiResponse(code = 404, message = "Invoice not found"),
+        @ApiResponse(code = 404, message = "HibernateInvoice not found"),
         @ApiResponse(code = 406, message = "Not acceptable format"),
         @ApiResponse(code = 500, message = "Internal server error")
     })
     @ApiImplicitParams({
         @ApiImplicitParam(required = true, name = "id", value = "Id of invoice to update", dataType = "Long"),
-        @ApiImplicitParam(required = true, name = "invoice", value = "Invoice with updated data", dataType = "Invoice")
+        @ApiImplicitParam(required = true, name = "invoice", value = "HibernateInvoice with updated data", dataType = "HibernateInvoice")
     })
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody(required = false) Invoice invoice) {
@@ -109,10 +109,10 @@ public class InvoiceController {
         }
     }
 
-    @ApiOperation(value = "Find by Id", notes = "Finds Invoice by given Id", response = Invoice.class)
+    @ApiOperation(value = "Find by Id", notes = "Finds HibernateInvoice by given Id", response = Invoice.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "OK", response = Invoice.class),
-        @ApiResponse(code = 404, message = "Invoice not found"),
+        @ApiResponse(code = 404, message = "HibernateInvoice not found"),
         @ApiResponse(code = 500, message = "Internal server error")
     })
     @ApiImplicitParam(required = true, name = "id", value = "Id of the invoice to get", dataType = "Long")
@@ -129,11 +129,11 @@ public class InvoiceController {
         }
     }
 
-    @ApiOperation(value = "Find by number", notes = "Finds Invoice by given number", response = Invoice.class)
+    @ApiOperation(value = "Find by number", notes = "Finds HibernateInvoice by given number", response = Invoice.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "OK", response = Invoice.class),
         @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 404, message = "Invoice not found"),
+        @ApiResponse(code = 404, message = "HibernateInvoice not found"),
         @ApiResponse(code = 500, message = "Internal server error")
     })
     @ApiImplicitParam(required = true, name = "number", value = "Number of the invoice to get", dataType = "String")
@@ -170,10 +170,10 @@ public class InvoiceController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value = "Delete by Id", notes = "Deletes Invoice with specific Id")
+    @ApiOperation(value = "Delete by Id", notes = "Deletes HibernateInvoice with specific Id")
     @ApiResponses({
         @ApiResponse(code = 204, message = "Removed"),
-        @ApiResponse(code = 404, message = "Invoice not found"),
+        @ApiResponse(code = 404, message = "HibernateInvoice not found"),
         @ApiResponse(code = 500, message = "Internal server error")
     })
     public ResponseEntity<?> deleteById(@PathVariable Long id) {

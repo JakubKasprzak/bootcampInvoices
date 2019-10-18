@@ -2,7 +2,6 @@ package pl.coderstrust.service;
 
 import java.util.Collection;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.coderstrust.database.Database;
 import pl.coderstrust.database.DatabaseOperationException;
@@ -11,20 +10,19 @@ import pl.coderstrust.model.Invoice;
 @Service
 public class InvoiceService {
 
-    private Database database;
+    private final Database database;
 
-    @Autowired
     public InvoiceService(Database database) {
         this.database = database;
     }
 
     public Invoice add(Invoice invoice) throws ServiceOperationException {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null");
         }
         try {
             if (invoice.getId() != null && database.exists(invoice.getId())) {
-                throw new ServiceOperationException("Invoice already exist in database");
+                throw new ServiceOperationException("HibernateInvoice already exist in database");
             }
             return database.save(invoice);
         } catch (DatabaseOperationException e) {
@@ -34,11 +32,11 @@ public class InvoiceService {
 
     public Invoice update(Invoice invoice) throws ServiceOperationException {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null");
         }
         try {
             if (invoice.getId() == null || !database.exists(invoice.getId())) {
-                throw new ServiceOperationException("Invoice does not exist in database");
+                throw new ServiceOperationException("HibernateInvoice does not exist in database");
             }
             return database.save(invoice);
         } catch (DatabaseOperationException e) {
@@ -52,7 +50,7 @@ public class InvoiceService {
         }
         try {
             if (!database.exists(id)) {
-                throw new ServiceOperationException("Invoice does not exist in database");
+                throw new ServiceOperationException("HibernateInvoice does not exist in database");
             }
             database.delete(id);
         } catch (DatabaseOperationException e) {

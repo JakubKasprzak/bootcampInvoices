@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @JsonDeserialize(builder = InvoiceEntry.Builder.class)
-@ApiModel(value = "Invoice Entry", description = "Name, quantity and values of sold product")
+@ApiModel(value = "HibernateInvoice Entry", description = "Name, quantity and values of sold product")
 public final class InvoiceEntry {
 
-    @ApiModelProperty(value = "The unique identifier of the Invoice Entry", position = -1, dataType = "Long")
+    @ApiModelProperty(value = "The unique identifier of the HibernateInvoice Entry", position = -1, dataType = "Long")
     private final Long id;
     @ApiModelProperty(value = "Description of what is sold", example = "Siatka ogrodzeniowa")
     private final String description;
@@ -27,7 +27,6 @@ public final class InvoiceEntry {
     private final Vat vatRate;
 
     private InvoiceEntry(Builder builder) {
-
         id = builder.id;
         description = builder.description;
         quantity = builder.quantity;
@@ -94,7 +93,7 @@ public final class InvoiceEntry {
 
     @Override
     public String toString() {
-        return "InvoiceEntry{"
+        return "HibernateInvoiceEntry{"
             + "id=" + id
             + ", description='" + description + '\''
             + ", quantity=" + quantity

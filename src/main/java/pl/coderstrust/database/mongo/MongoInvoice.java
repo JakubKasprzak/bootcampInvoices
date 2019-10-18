@@ -95,13 +95,13 @@ public final class MongoInvoice {
         }
         MongoInvoice invoice = (MongoInvoice) o;
         return Objects.equals(id, invoice.id)
-                && Objects.equals(mongoId, invoice.mongoId)
-                && Objects.equals(number, invoice.number)
-                && Objects.equals(issuedDate, invoice.issuedDate)
-                && Objects.equals(dueDate, invoice.dueDate)
-                && Objects.equals(seller, invoice.seller)
-                && Objects.equals(buyer, invoice.buyer)
-                && Objects.equals(entries, invoice.entries);
+            && Objects.equals(mongoId, invoice.mongoId)
+            && Objects.equals(number, invoice.number)
+            && Objects.equals(issuedDate, invoice.issuedDate)
+            && Objects.equals(dueDate, invoice.dueDate)
+            && Objects.equals(seller, invoice.seller)
+            && Objects.equals(buyer, invoice.buyer)
+            && Objects.equals(entries, invoice.entries);
     }
 
     @Override
@@ -112,15 +112,15 @@ public final class MongoInvoice {
     @Override
     public String toString() {
         return "MongoInvoice{"
-                + "mongoId=" + mongoId
-                + ", id=" + id
-                + ", number='" + number + '\''
-                + ", issuedDate=" + issuedDate
-                + ", dueDate=" + dueDate
-                + ", seller=" + seller
-                + ", buyer=" + buyer
-                + ", entries=" + entries
-                + '}';
+            + "mongoId=" + mongoId
+            + ", id=" + id
+            + ", number='" + number + '\''
+            + ", issuedDate=" + issuedDate
+            + ", dueDate=" + dueDate
+            + ", seller=" + seller
+            + ", buyer=" + buyer
+            + ", entries=" + entries
+            + '}';
     }
 
     public static class Builder {

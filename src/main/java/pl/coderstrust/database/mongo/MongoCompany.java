@@ -31,6 +31,10 @@ public final class MongoCompany {
         email = builder.email;
     }
 
+    public static MongoCompany.Builder builder() {
+        return new MongoCompany.Builder();
+    }
+
     public String getName() {
         return name;
     }
@@ -87,10 +91,6 @@ public final class MongoCompany {
             + ", phoneNumber='" + phoneNumber + '\''
             + ", email='" + email + '\''
             + '}';
-    }
-
-    public static MongoCompany.Builder builder() {
-        return new MongoCompany.Builder();
     }
 
     public static class Builder {

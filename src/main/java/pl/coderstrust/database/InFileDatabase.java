@@ -9,10 +9,14 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 import pl.coderstrust.configuration.InFileDatabaseProperties;
 import pl.coderstrust.helpers.FileHelper;
 import pl.coderstrust.model.Invoice;
 
+@Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "in-file")
 public class InFileDatabase implements Database {
 
     private String filePath;
@@ -31,7 +35,7 @@ public class InFileDatabase implements Database {
     @Override
     public synchronized Invoice save(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null.");
         }
         try {
             if (invoice.getId() == null || !exists(invoice.getId())) {
@@ -46,7 +50,7 @@ public class InFileDatabase implements Database {
     @Override
     public synchronized void delete(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         try {
             fileHelper.removeLine(filePath, getPositionInDatabase(id));
@@ -58,7 +62,7 @@ public class InFileDatabase implements Database {
     @Override
     public Optional<Invoice> getById(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         try {
             return getInvoices().stream()
@@ -72,7 +76,7 @@ public class InFileDatabase implements Database {
     @Override
     public Optional<Invoice> getByNumber(String number) throws DatabaseOperationException {
         if (number == null) {
-            throw new IllegalArgumentException("Invoice number cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice number cannot be null.");
         }
         try {
             return getInvoices().stream()
@@ -105,7 +109,7 @@ public class InFileDatabase implements Database {
     @Override
     public boolean exists(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         try {
             return getInvoices()
@@ -132,7 +136,7 @@ public class InFileDatabase implements Database {
         nextId = new AtomicLong(getLastInvoiceId());
     }
 
-    private Invoice deserializeJsonToInvoice(String json)  {
+    private Invoice deserializeJsonToInvoice(String json) {
         try {
             return mapper.readValue(json, Invoice.class);
         } catch (IOException e) {

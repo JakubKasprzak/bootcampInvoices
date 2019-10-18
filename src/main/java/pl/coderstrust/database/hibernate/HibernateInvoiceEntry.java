@@ -38,7 +38,7 @@ public class HibernateInvoiceEntry {
         vatRate = null;
     }
 
-    private HibernateInvoiceEntry(HibernateInvoiceEntry.Builder builder) {
+    private HibernateInvoiceEntry(Builder builder) {
         id = builder.id;
         description = builder.description;
         quantity = builder.quantity;
@@ -48,8 +48,8 @@ public class HibernateInvoiceEntry {
         vatRate = builder.vatRate;
     }
 
-    public static HibernateInvoiceEntry.Builder builder() {
-        return new HibernateInvoiceEntry.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -126,37 +126,37 @@ public class HibernateInvoiceEntry {
         private BigDecimal grossValue;
         private HibernateVat vatRate;
 
-        public HibernateInvoiceEntry.Builder withId(Long id) {
+        public Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withQuantity(Long quantity) {
+        public Builder withQuantity(Long quantity) {
             this.quantity = quantity;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withPrice(BigDecimal price) {
+        public Builder withPrice(BigDecimal price) {
             this.price = price;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withNetValue(BigDecimal netValue) {
+        public Builder withNetValue(BigDecimal netValue) {
             this.netValue = netValue;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withGrossValue(BigDecimal grossValue) {
+        public Builder withGrossValue(BigDecimal grossValue) {
             this.grossValue = grossValue;
             return this;
         }
 
-        public HibernateInvoiceEntry.Builder withVatRate(HibernateVat vatRate) {
+        public Builder withVatRate(HibernateVat vatRate) {
             this.vatRate = vatRate;
             return this;
         }

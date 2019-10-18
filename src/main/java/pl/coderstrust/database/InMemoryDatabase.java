@@ -4,10 +4,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 import pl.coderstrust.model.Invoice;
 
 @Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "in-memory")
 public class InMemoryDatabase implements Database {
 
     private Map<Long, Invoice> database;
@@ -23,7 +25,7 @@ public class InMemoryDatabase implements Database {
     @Override
     public synchronized Invoice save(Invoice invoice) {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null.");
         }
         if (invoice.getId() == null || !database.containsKey(invoice.getId())) {
             return insertInvoice(invoice);
@@ -52,7 +54,7 @@ public class InMemoryDatabase implements Database {
     @Override
     public synchronized void delete(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         if (!database.containsKey(id)) {
             throw new DatabaseOperationException(String.format("No invoice with id: %s", id));
@@ -63,7 +65,7 @@ public class InMemoryDatabase implements Database {
     @Override
     public Optional<Invoice> getById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         return Optional.ofNullable(database.get(id));
     }
@@ -71,7 +73,7 @@ public class InMemoryDatabase implements Database {
     @Override
     public Optional<Invoice> getByNumber(String number) {
         if (number == null) {
-            throw new IllegalArgumentException("Invoice number cannot be null");
+            throw new IllegalArgumentException("HibernateInvoice number cannot be null");
         }
         return database.values()
             .stream()

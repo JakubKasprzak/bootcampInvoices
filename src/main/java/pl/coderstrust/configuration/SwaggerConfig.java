@@ -29,7 +29,7 @@ public class SwaggerConfig {
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("Invoice service")
+        return new ApiInfoBuilder().title("HibernateInvoice service")
             .description("Service providing basic operations on Vat Invoices.")
             .contact(new Contact("Andrzej Psiuk, Jakub Kasprzak, Mateusz Pilarczyk", "https://github.com/CodersTrustPL/project-14-andrzej-jakub-mateusz", "andrzejpsiuk91@gmail.com, matp321@gmail.com, kasprzakjak@poczta.onet.pl"))
             .version("1.0")
