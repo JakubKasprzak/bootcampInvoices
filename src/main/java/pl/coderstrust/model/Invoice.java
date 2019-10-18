@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonDeserialize(builder = Invoice.Builder.class)
-@ApiModel(value = "Invoice", description = "Vat Invoice")
+@ApiModel(value = "HibernateInvoice", description = "Vat HibernateInvoice")
 public final class Invoice {
 
     @ApiModelProperty(value = "The unique identifier of the invoice", position = -1, dataType = "Long")
     private final Long id;
-    @ApiModelProperty(value = "Invoice number", example = "FV/1/05/2019")
+    @ApiModelProperty(value = "HibernateInvoice number", example = "FV/1/05/2019")
     private final String number;
-    @ApiModelProperty(value = "Date of Invoice creation", example = "2019-11-21")
+    @ApiModelProperty(value = "Date of HibernateInvoice creation", example = "2019-11-21")
     private final LocalDate issuedDate;
     @ApiModelProperty(value = "Term of payment", example = "2019-11-21")
     private final LocalDate dueDate;
@@ -95,7 +95,7 @@ public final class Invoice {
 
     @Override
     public String toString() {
-        return "Invoice{"
+        return "HibernateInvoice{"
             + "id=" + id
             + ", number='" + number + '\''
             + ", issuedDate=" + issuedDate

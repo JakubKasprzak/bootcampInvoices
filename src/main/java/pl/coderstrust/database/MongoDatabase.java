@@ -3,14 +3,18 @@ package pl.coderstrust.database;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 import pl.coderstrust.database.mongo.MongoInvoice;
 import pl.coderstrust.database.mongo.MongoModelMapper;
 import pl.coderstrust.model.Invoice;
 
+@Repository
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "mongo")
 public class MongoDatabase implements Database {
     private final MongoTemplate mongoTemplate;
     private final MongoModelMapper modelMapper;
@@ -31,7 +35,7 @@ public class MongoDatabase implements Database {
     @Override
     public Invoice save(Invoice invoice) throws DatabaseOperationException {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null.");
         }
         try {
             MongoInvoice invoiceInDatabase = getInvoiceById(invoice.getId());
@@ -69,7 +73,7 @@ public class MongoDatabase implements Database {
     @Override
     public void delete(Long id) throws DatabaseOperationException {
         if (id == null) {
-            throw new IllegalArgumentException("Invoice id cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice id cannot be null.");
         }
         try {
             MongoInvoice invoice = mongoTemplate.findAndRemove(Query.query(Criteria.where("id").is(id)), MongoInvoice.class);

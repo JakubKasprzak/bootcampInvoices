@@ -7,23 +7,24 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 @JsonDeserialize(builder = Company.Builder.class)
-@ApiModel(value = "Company", description = "Company")
+@ApiModel(value = "HibernateCompany", description = "HibernateCompany")
 public final class Company {
 
     @ApiModelProperty(value = "The unique identifier of the company.", position = -1, dataType = "Long")
     private final Long id;
-    @ApiModelProperty(value = "Company name.", example = "CodersTrust")
+    @ApiModelProperty(value = "HibernateCompany name.", example = "CodersTrust")
     private final String name;
-    @ApiModelProperty(value = "Company address.", example = "ul. Bukowińska 24 d/7, 02-703 Warszawa")
+    @ApiModelProperty(value = "HibernateCompany address.", example = "ul. Bukowińska 24 d/7, 02-703 Warszawa")
     private final String address;
-    @ApiModelProperty(value = "Company tax id.", example = "7010416384")
+    @ApiModelProperty(value = "HibernateCompany tax id.", example = "7010416384")
     private final String taxId;
-    @ApiModelProperty(value = "Company bank account number.", example = "27 1030 0019 0109 8503 0014 2668")
+    @ApiModelProperty(value = "HibernateCompany bank account number.", example = "27 1030 0019 0109 8503 0014 2668")
     private final String accountNumber;
-    @ApiModelProperty(value = "Company telephone number", example = "22 788-83-22")
+    @ApiModelProperty(value = "HibernateCompany telephone number", example = "22 788-83-22")
     private final String phoneNumber;
-    @ApiModelProperty(value = "Company email address", example = "example@post.com.pl")
+    @ApiModelProperty(value = "HibernateCompany email address", example = "example@post.com.pl")
     private final String email;
+
 
     private Company(Builder builder) {
         id = builder.id;
@@ -92,7 +93,7 @@ public final class Company {
 
     @Override
     public String toString() {
-        return "Company{"
+        return "HibernateCompany{"
             + "id=" + id
             + ", name='" + name + '\''
             + ", address='" + address + '\''

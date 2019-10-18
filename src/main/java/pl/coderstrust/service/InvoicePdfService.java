@@ -39,7 +39,7 @@ public class InvoicePdfService {
 
     public static byte[] createPdf(Invoice invoice) throws ServiceOperationException {
         if (invoice == null) {
-            throw new IllegalArgumentException("Invoice cannot be null.");
+            throw new IllegalArgumentException("HibernateInvoice cannot be null.");
         }
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();

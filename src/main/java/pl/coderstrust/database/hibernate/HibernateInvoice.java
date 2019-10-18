@@ -47,7 +47,7 @@ public class HibernateInvoice {
         entries = null;
     }
 
-    private HibernateInvoice(HibernateInvoice.Builder builder) {
+    private HibernateInvoice(Builder builder) {
         id = builder.id;
         number = builder.number;
         issuedDate = builder.issuedDate;
@@ -57,8 +57,8 @@ public class HibernateInvoice {
         entries = builder.entries;
     }
 
-    public static HibernateInvoice.Builder builder() {
-        return new HibernateInvoice.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -135,37 +135,37 @@ public class HibernateInvoice {
         private HibernateCompany buyer;
         private List<HibernateInvoiceEntry> entries;
 
-        public HibernateInvoice.Builder withId(Long id) {
+        public Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public HibernateInvoice.Builder withNumber(String number) {
+        public Builder withNumber(String number) {
             this.number = number;
             return this;
         }
 
-        public HibernateInvoice.Builder withIssuedDate(LocalDate issuedDate) {
+        public Builder withIssuedDate(LocalDate issuedDate) {
             this.issuedDate = issuedDate;
             return this;
         }
 
-        public HibernateInvoice.Builder withDueDate(LocalDate dueDate) {
+        public Builder withDueDate(LocalDate dueDate) {
             this.dueDate = dueDate;
             return this;
         }
 
-        public HibernateInvoice.Builder withSeller(HibernateCompany seller) {
+        public Builder withSeller(HibernateCompany seller) {
             this.seller = seller;
             return this;
         }
 
-        public HibernateInvoice.Builder withBuyer(HibernateCompany buyer) {
+        public Builder withBuyer(HibernateCompany buyer) {
             this.buyer = buyer;
             return this;
         }
 
-        public HibernateInvoice.Builder withEntries(List<HibernateInvoiceEntry> entries) {
+        public Builder withEntries(List<HibernateInvoiceEntry> entries) {
             this.entries = entries;
             return this;
         }

@@ -36,16 +36,13 @@ import pl.coderstrust.service.ServiceOperationException;
 @WithMockUser(roles = "USER")
 class InvoiceControllerTest {
 
+    String url = "/invoices/";
     @MockBean
     private InvoiceService invoiceService;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper mapper;
-
-    String url = "/invoices/";
 
     @Test
     @WithMockUser(roles = "InvalidRole")
@@ -53,12 +50,10 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
-
         //When
-        mockMvc.perform(get(String.format("%s%d",url,invoiceToGet.getId()))
+        mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
             .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isForbidden());
-
         //Then
         verify(invoiceService, never()).getById(invoiceToGet.getId());
     }
@@ -68,14 +63,12 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
-
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
             .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
-
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
     }
@@ -85,12 +78,10 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
-
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
             .accept(MediaType.APPLICATION_ATOM_XML))
             .andExpect(status().isNotAcceptable());
-
         //Then
         verify(invoiceService, never()).getAll();
     }
@@ -100,11 +91,9 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.empty()).when(invoiceService).getById(invoiceToGet.getId());
-
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId())))
             .andExpect(status().isNotFound());
-
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
     }
@@ -114,11 +103,9 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doThrow(ServiceOperationException.class).when(invoiceService).getById(invoiceToGet.getId());
-
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId())))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
     }
@@ -129,13 +116,11 @@ class InvoiceControllerTest {
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         String endPoint = String.format("byNumber?number=%s", invoiceToGet.getNumber());
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getByNumber(invoiceToGet.getNumber());
-
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
-
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
     }
@@ -145,7 +130,6 @@ class InvoiceControllerTest {
         //When
         mockMvc.perform(get(String.format("%s%d", url, null)))
             .andExpect(status().isBadRequest());
-
         //Then
         verify(invoiceService, never()).getByNumber(null);
     }
@@ -156,11 +140,9 @@ class InvoiceControllerTest {
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.empty()).when(invoiceService).getByNumber(invoiceToGet.getNumber());
         String endPoint = String.format("byNumber?number=%s", invoiceToGet.getNumber());
-
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
             .andExpect(status().isNotFound());
-
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
     }
@@ -171,12 +153,10 @@ class InvoiceControllerTest {
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getByNumber(invoiceToGet.getNumber());
         String endPoint = String.format("byNumber?=number%s", invoiceToGet.getNumber());
-
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint))
             .accept(MediaType.APPLICATION_ATOM_XML))
             .andExpect(status().isNotAcceptable());
-
         //Then
         verify(invoiceService, never()).getByNumber(invoiceToGet.getNumber());
     }
@@ -187,11 +167,9 @@ class InvoiceControllerTest {
         Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
         doThrow(ServiceOperationException.class).when(invoiceService).getByNumber(invoiceToGet.getNumber());
         String endPoint = String.format("byNumber?number=%s", invoiceToGet.getNumber());
-
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
     }
@@ -202,11 +180,9 @@ class InvoiceControllerTest {
         Invoice invoiceToDelete = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToDelete.getId());
         doNothing().when(invoiceService).deleteById(invoiceToDelete.getId());
-
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId())))
             .andExpect(status().isNoContent());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
         verify(invoiceService, times(1)).deleteById(invoiceToDelete.getId());
@@ -218,14 +194,12 @@ class InvoiceControllerTest {
         Invoice invoiceToDelete = InvoiceGenerator.generateRandomInvoice();
         doReturn(false).when(invoiceService).exists(invoiceToDelete.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).update(invoiceToDelete);
-
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToDelete))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
         verify(invoiceService, never()).update(invoiceToDelete);
@@ -237,14 +211,12 @@ class InvoiceControllerTest {
         Invoice invoiceToDelete = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToDelete.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).deleteById(invoiceToDelete.getId());
-
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToDelete))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
         verify(invoiceService, times(1)).deleteById(invoiceToDelete.getId());
@@ -254,11 +226,9 @@ class InvoiceControllerTest {
     void shouldRemoveAllInvoices() throws Exception {
         //Given
         doNothing().when(invoiceService).deleteAll();
-
         //When
         mockMvc.perform(delete(url))
             .andExpect(status().isNoContent());
-
         //Then
         verify(invoiceService, times(1)).deleteAll();
     }
@@ -267,11 +237,9 @@ class InvoiceControllerTest {
     void shouldReturnInternalServerErrorStatusDuringRemovingAllInvoicesWhenSomethingWentWrongOnServer() throws Exception {
         //Given
         doThrow(ServiceOperationException.class).when(invoiceService).deleteAll();
-
         //When
         mockMvc.perform(delete(url))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).deleteAll();
     }
@@ -281,13 +249,11 @@ class InvoiceControllerTest {
         //Given
         Collection<Invoice> invoices = Arrays.asList(InvoiceGenerator.generateRandomInvoice(), InvoiceGenerator.generateRandomInvoice());
         doReturn(invoices).when(invoiceService).getAll();
-
         //When
         mockMvc.perform(get(url))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(content().json(mapper.writeValueAsString(invoices)));
-
         //Then
         verify(invoiceService, times(1)).getAll();
     }
@@ -298,7 +264,6 @@ class InvoiceControllerTest {
         mockMvc.perform(get(url)
             .accept(MediaType.APPLICATION_ATOM_XML))
             .andExpect(status().isNotAcceptable());
-
         //Then
         verify(invoiceService, never()).getAll();
     }
@@ -307,11 +272,9 @@ class InvoiceControllerTest {
     void shouldReturnInternalServerErrorStatusDuringGettingAllInvoicesWhenSomethingWentWrongOnServer() throws Exception {
         //Given
         doThrow(ServiceOperationException.class).when(invoiceService).getAll();
-
         //When
         mockMvc.perform(get(url))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).getAll();
     }
@@ -322,14 +285,12 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(false).when(invoiceService).exists(invoiceToAdd.getId());
         doReturn(invoiceToAdd).when(invoiceService).add(invoiceToAdd);
-
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToAdd)))
             .andExpect(status().isCreated());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
         verify(invoiceService, times(1)).add(invoiceToAdd);
@@ -340,14 +301,12 @@ class InvoiceControllerTest {
         //Given
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(invoiceToAdd).when(invoiceService).add(invoiceToAdd);
-
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_ATOM_XML)
             .content(mapper.writeValueAsBytes(invoiceToAdd))
             .accept(MediaType.APPLICATION_ATOM_XML))
             .andExpect(status().isUnsupportedMediaType());
-
         //Then
         verify(invoiceService, never()).add(invoiceToAdd);
     }
@@ -358,14 +317,12 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
-
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToAdd))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isConflict());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
         verify(invoiceService, never()).add(invoiceToAdd);
@@ -377,14 +334,12 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
-
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToAdd))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isConflict());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
         verify(invoiceService, never()).add(invoiceToAdd);
@@ -396,14 +351,12 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(false).when(invoiceService).exists(invoiceToAdd.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
-
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToAdd))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
         verify(invoiceService, times(1)).add(invoiceToAdd);
@@ -415,7 +368,6 @@ class InvoiceControllerTest {
         Invoice invoiceToUpdate = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToUpdate.getId());
         doReturn(invoiceToUpdate).when(invoiceService).update(invoiceToUpdate);
-
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
             .contentType(MediaType.APPLICATION_JSON)
@@ -423,7 +375,6 @@ class InvoiceControllerTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andExpect(content().json(mapper.writeValueAsString(invoiceToUpdate)));
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());
         verify(invoiceService, times(1)).update(invoiceToUpdate);
@@ -435,14 +386,12 @@ class InvoiceControllerTest {
         Invoice invoiceToUpdate = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToUpdate.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).update(invoiceToUpdate);
-
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToUpdate))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());
         verify(invoiceService, times(1)).update(invoiceToUpdate);
@@ -454,14 +403,12 @@ class InvoiceControllerTest {
         Invoice invoiceToUpdate = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToUpdate.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).update(invoiceToUpdate);
-
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
             .contentType(MediaType.APPLICATION_ATOM_XML)
             .content(mapper.writeValueAsBytes(invoiceToUpdate))
             .accept(MediaType.APPLICATION_ATOM_XML))
             .andExpect(status().isUnsupportedMediaType());
-
         //Then
         verify(invoiceService, never()).update(invoiceToUpdate);
     }
@@ -474,7 +421,6 @@ class InvoiceControllerTest {
             .content(mapper.writeValueAsBytes(null))
             .accept(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(status().isBadRequest());
-
         //Then
         verify(invoiceService, never()).update(null);
     }
@@ -485,14 +431,12 @@ class InvoiceControllerTest {
         Invoice invoiceToUpdate = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToUpdate.getId());
         doReturn(invoiceToUpdate).when(invoiceService).update(invoiceToUpdate);
-
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId() + 1))
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToUpdate))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-
         //Then
         verify(invoiceService, never()).exists(invoiceToUpdate.getId());
         verify(invoiceService, never()).update(invoiceToUpdate);
@@ -504,14 +448,12 @@ class InvoiceControllerTest {
         Invoice invoiceToUpdate = InvoiceGenerator.generateRandomInvoice();
         doReturn(false).when(invoiceService).exists(invoiceToUpdate.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).update(invoiceToUpdate);
-
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsBytes(invoiceToUpdate))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
-
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());
         verify(invoiceService, never()).update(invoiceToUpdate);
