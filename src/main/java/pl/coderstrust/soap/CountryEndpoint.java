@@ -9,13 +9,13 @@ import pl.coderstrust.soap.bindingclasses.GetCountryRequest;
 import pl.coderstrust.soap.bindingclasses.GetCountryResponse;
 
 @Endpoint
-public class InvoicesEndpoint {
+public class CountryEndpoint {
     private static final String NAMESPACE_URI = "http://spring.io/guides/gs-producing-web-service";
 
-    private TemporaryRepository countryRepository;
+    private CountryRepository countryRepository;
 
     @Autowired
-    public InvoicesEndpoint(TemporaryRepository countryRepository) {
+    public CountryEndpoint(CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
     }
 

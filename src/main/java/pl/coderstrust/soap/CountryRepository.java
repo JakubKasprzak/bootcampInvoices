@@ -9,7 +9,7 @@ import pl.coderstrust.soap.bindingclasses.Country;
 import pl.coderstrust.soap.bindingclasses.Currency;
 
 @Component
-public class TemporaryRepository {
+public class CountryRepository {
     private static final Map<String, Country> countries = new HashMap<>();
 
     @PostConstruct
