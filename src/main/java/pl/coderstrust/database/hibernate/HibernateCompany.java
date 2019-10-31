@@ -37,7 +37,7 @@ public class HibernateCompany {
         email = null;
     }
 
-    private HibernateCompany(Builder builder) {
+    private HibernateCompany(HibernateCompany.Builder builder) {
         id = builder.id;
         name = builder.name;
         address = builder.address;
@@ -111,8 +111,8 @@ public class HibernateCompany {
             + '}';
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static HibernateCompany.Builder builder() {
+        return new HibernateCompany.Builder();
     }
 
     public static class Builder {
@@ -125,37 +125,37 @@ public class HibernateCompany {
         private String phoneNumber;
         private String email;
 
-        public Builder withId(Long id) {
+        public HibernateCompany.Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public Builder withName(String name) {
+        public HibernateCompany.Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public Builder withAddress(String address) {
+        public HibernateCompany.Builder withAddress(String address) {
             this.address = address;
             return this;
         }
 
-        public Builder withTaxId(String taxId) {
+        public HibernateCompany.Builder withTaxId(String taxId) {
             this.taxId = taxId;
             return this;
         }
 
-        public Builder withAccountNumber(String accountNumber) {
+        public HibernateCompany.Builder withAccountNumber(String accountNumber) {
             this.accountNumber = accountNumber;
             return this;
         }
 
-        public Builder withPhoneNumber(String phoneNumber) {
+        public HibernateCompany.Builder withPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
             return this;
         }
 
-        public Builder withEmail(String email) {
+        public HibernateCompany.Builder withEmail(String email) {
             this.email = email;
             return this;
         }

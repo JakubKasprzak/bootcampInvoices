@@ -211,7 +211,7 @@ public class PostgreSqlContainerLiveTest {
 
     @Test
     void deleteMethodShouldThrowExceptionForDeletingNotExistingInvoice() throws DatabaseOperationException {
-        assertThrows(DatabaseOperationException.class, () -> sqlDatabase.delete(1000L));
+        assertThrows(DatabaseOperationException.class, () -> sqlDatabase.delete(listOfInvoicesAddedToDatabase.size()+1L));
     }
 
     @Test
