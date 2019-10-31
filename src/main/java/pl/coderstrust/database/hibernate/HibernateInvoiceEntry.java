@@ -1,4 +1,4 @@
-package pl.coderstrust.database.sql;
+package pl.coderstrust.database.hibernate;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "invoice_entry")
-public class InvoiceEntry {
+public class HibernateInvoiceEntry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +26,9 @@ public class InvoiceEntry {
 
     private final BigDecimal grossValue;
 
-    private final Vat vatRate;
+    private final HibernateVat vatRate;
 
-    private InvoiceEntry() {
+    private HibernateInvoiceEntry() {
         id = null;
         description = null;
         quantity = null;
@@ -38,7 +38,7 @@ public class InvoiceEntry {
         vatRate = null;
     }
 
-    private InvoiceEntry(InvoiceEntry.Builder builder) {
+    private HibernateInvoiceEntry(Builder builder) {
         id = builder.id;
         description = builder.description;
         quantity = builder.quantity;
@@ -48,8 +48,8 @@ public class InvoiceEntry {
         vatRate = builder.vatRate;
     }
 
-    public static InvoiceEntry.Builder builder() {
-        return new InvoiceEntry.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -76,7 +76,7 @@ public class InvoiceEntry {
         return grossValue;
     }
 
-    public Vat getVatRate() {
+    public HibernateVat getVatRate() {
         return vatRate;
     }
 
@@ -88,7 +88,7 @@ public class InvoiceEntry {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        InvoiceEntry that = (InvoiceEntry) o;
+        HibernateInvoiceEntry that = (HibernateInvoiceEntry) o;
         return Objects.equals(id, that.id)
             && Objects.equals(description, that.description)
             && Objects.equals(quantity, that.quantity)
@@ -105,7 +105,7 @@ public class InvoiceEntry {
 
     @Override
     public String toString() {
-        return "InvoiceEntry{"
+        return "HibernateInvoiceEntry{"
             + "id=" + id
             + ", description='" + description + '\''
             + ", quantity=" + quantity
@@ -124,45 +124,45 @@ public class InvoiceEntry {
         private BigDecimal price;
         private BigDecimal netValue;
         private BigDecimal grossValue;
-        private Vat vatRate;
+        private HibernateVat vatRate;
 
-        public InvoiceEntry.Builder withId(Long id) {
+        public Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public InvoiceEntry.Builder withDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public InvoiceEntry.Builder withQuantity(Long quantity) {
+        public Builder withQuantity(Long quantity) {
             this.quantity = quantity;
             return this;
         }
 
-        public InvoiceEntry.Builder withPrice(BigDecimal price) {
+        public Builder withPrice(BigDecimal price) {
             this.price = price;
             return this;
         }
 
-        public InvoiceEntry.Builder withNetValue(BigDecimal netValue) {
+        public Builder withNetValue(BigDecimal netValue) {
             this.netValue = netValue;
             return this;
         }
 
-        public InvoiceEntry.Builder withGrossValue(BigDecimal grossValue) {
+        public Builder withGrossValue(BigDecimal grossValue) {
             this.grossValue = grossValue;
             return this;
         }
 
-        public InvoiceEntry.Builder withVatRate(Vat vatRate) {
+        public Builder withVatRate(HibernateVat vatRate) {
             this.vatRate = vatRate;
             return this;
         }
 
-        public InvoiceEntry build() {
-            return new InvoiceEntry(this);
+        public HibernateInvoiceEntry build() {
+            return new HibernateInvoiceEntry(this);
         }
     }
 }

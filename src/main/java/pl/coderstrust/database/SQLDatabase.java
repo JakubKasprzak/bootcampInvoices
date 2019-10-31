@@ -1,9 +1,5 @@
 package pl.coderstrust.database;
 
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
@@ -11,14 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +23,6 @@ import pl.coderstrust.database.mapper.InvoiceRowMapper;
 import pl.coderstrust.model.Company;
 import pl.coderstrust.model.Invoice;
 import pl.coderstrust.model.InvoiceEntry;
-import pl.coderstrust.model.Vat;
 
 @Repository
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "postgresql")

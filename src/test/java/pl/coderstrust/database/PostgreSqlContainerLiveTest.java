@@ -50,7 +50,7 @@ public class PostgreSqlContainerLiveTest {
 
     Random random;
     Invoice testedInvoice;
-    int numberOfGeneratedInvoices;
+    long numberOfGeneratedInvoices;
 
     private static final String ENCODING = "UTF-8";
     private final String CREATE_TABLE =FileUtils.readFileToString(new File("src/main/resources/sqlScripts/CREATE_TABLES.sql"),ENCODING);
@@ -168,12 +168,17 @@ public class PostgreSqlContainerLiveTest {
             listOfInvoicesAddedToDatabase.add(buildInvoice(invoiceKey.longValue(),generatedInvoice,buildCompany(buyerKey.longValue(),generatedInvoice.getBuyer()),buildCompany(sellerKey.longValue(),generatedInvoice.getSeller()),List.copyOf(listOfInvoiceEntries)));
             listOfInvoiceEntries.clear();
         }
-        testedInvoice =  listOfInvoicesAddedToDatabase.stream().skip(random.nextInt(listOfInvoicesAddedToDatabase.size()-1)).findFirst().get();
+        testedInvoice =  listOfInvoicesAddedToDatabase.stream().skip(random.nextInt(listOfInvoicesAddedToDatabase.size())).findFirst().get();
    }
 
     @AfterEach
     void finish() throws IOException {
         jdbcTemplate.execute(DROP_TABLE);
+    }
+
+    @Test
+    void setTestedInvoice(){
+
     }
 
     @Test

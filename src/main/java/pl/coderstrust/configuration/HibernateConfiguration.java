@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import pl.coderstrust.database.sql.InvoiceRepository;
+import pl.coderstrust.database.hibernate.InvoiceRepository;
 
 @Configuration
 @PropertySource("classpath:application.properties")

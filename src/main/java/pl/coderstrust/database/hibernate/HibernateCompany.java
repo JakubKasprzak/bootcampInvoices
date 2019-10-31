@@ -1,4 +1,4 @@
-package pl.coderstrust.database.sql;
+package pl.coderstrust.database.hibernate;
 
 import java.util.Objects;
 import javax.persistence.Entity;
@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "company")
-public class Company {
+public class HibernateCompany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Company {
 
     private final String email;
 
-    private Company() {
+    private HibernateCompany() {
         id = null;
         name = null;
         address = null;
@@ -37,7 +37,7 @@ public class Company {
         email = null;
     }
 
-    private Company(Company.Builder builder) {
+    private HibernateCompany(Builder builder) {
         id = builder.id;
         name = builder.name;
         address = builder.address;
@@ -83,7 +83,7 @@ public class Company {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Company company = (Company) o;
+        HibernateCompany company = (HibernateCompany) o;
         return Objects.equals(id, company.id)
             && Objects.equals(name, company.name)
             && Objects.equals(address, company.address)
@@ -100,7 +100,7 @@ public class Company {
 
     @Override
     public String toString() {
-        return "Company{"
+        return "HibernateCompany{"
             + "id=" + id
             + ", name='" + name + '\''
             + ", address='" + address + '\''
@@ -111,8 +111,8 @@ public class Company {
             + '}';
     }
 
-    public static Company.Builder builder() {
-        return new Company.Builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {
@@ -125,43 +125,43 @@ public class Company {
         private String phoneNumber;
         private String email;
 
-        public Company.Builder withId(Long id) {
+        public Builder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public Company.Builder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public Company.Builder withAddress(String address) {
+        public Builder withAddress(String address) {
             this.address = address;
             return this;
         }
 
-        public Company.Builder withTaxId(String taxId) {
+        public Builder withTaxId(String taxId) {
             this.taxId = taxId;
             return this;
         }
 
-        public Company.Builder withAccountNumber(String accountNumber) {
+        public Builder withAccountNumber(String accountNumber) {
             this.accountNumber = accountNumber;
             return this;
         }
 
-        public Company.Builder withPhoneNumber(String phoneNumber) {
+        public Builder withPhoneNumber(String phoneNumber) {
             this.phoneNumber = phoneNumber;
             return this;
         }
 
-        public Company.Builder withEmail(String email) {
+        public Builder withEmail(String email) {
             this.email = email;
             return this;
         }
 
-        public Company build() {
-            return new Company(this);
+        public HibernateCompany build() {
+            return new HibernateCompany(this);
         }
     }
 }

@@ -1,6 +1,6 @@
-package pl.coderstrust.database.sql;
+package pl.coderstrust.database.hibernate;
 
-public enum Vat {
+public enum HibernateVat {
 
     VAT_0(0.00f),
     VAT_5(0.05f),
@@ -9,7 +9,7 @@ public enum Vat {
 
     private final float value;
 
-    Vat(float value) {
+    HibernateVat(float value) {
         this.value = value;
     }
 
@@ -19,7 +19,7 @@ public enum Vat {
 
     @Override
     public String toString() {
-        return "Vat{"
+        return "HibernateVat{"
             + "value=" + value
             + '}';
     }
