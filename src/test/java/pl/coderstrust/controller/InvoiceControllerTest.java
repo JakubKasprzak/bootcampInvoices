@@ -365,6 +365,7 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
+
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
@@ -384,6 +385,7 @@ class InvoiceControllerTest {
         Invoice invoiceToAdd = InvoiceGenerator.generateRandomInvoice();
         doReturn(true).when(invoiceService).exists(invoiceToAdd.getId());
         doThrow(ServiceOperationException.class).when(invoiceService).add(invoiceToAdd);
+
         //When
         mockMvc.perform(post(url)
             .contentType(MediaType.APPLICATION_JSON)
