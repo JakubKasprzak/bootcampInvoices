@@ -257,4 +257,5 @@ public class SQLDatabase implements Database {
             .withVatRate(invoiceEntry.getVatRate())
             .build();
     }
+
 }

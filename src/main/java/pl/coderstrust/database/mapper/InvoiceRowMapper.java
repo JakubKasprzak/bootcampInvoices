@@ -70,7 +70,7 @@ public class InvoiceRowMapper implements RowMapper<Invoice> {
 
     private InvoiceEntry getInvoiceEntry(ResultSet rs) throws SQLException {
         return InvoiceEntry.builder()
-            .withId(rs.getLong("entry_id"))
+            .withId(rs.getLong("id"))
             .withDescription(rs.getString("description"))
             .withQuantity(rs.getLong("quantity"))
             .withPrice(rs.getBigDecimal("price"))
