@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.CollectionUtils;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,7 +40,7 @@ import pl.coderstrust.config.TestDataBaseConfiguration;
 
 @SpringBootTest(classes = TestDataBaseConfiguration.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class})
 public class PostgreSqlContainerLiveTest {
 
     @Autowired
@@ -123,7 +124,10 @@ public class PostgreSqlContainerLiveTest {
     }
 
     @Test
-    void saveMethodShouldThrowExceptionForNullInvoice() {assertThrows(IllegalArgumentException.class, () -> sqlDatabase.save(null));
+    void saveMethodShouldThrowExceptionForNullInvoice() {
+        Exception e =assertThrows(Exception.class, () -> sqlDatabase.save(null));
+
+        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
     }
 
     @Test
@@ -137,10 +141,12 @@ public class PostgreSqlContainerLiveTest {
 
     @Test
     void deleteMethodShouldThrowExceptionForNullId() {
-        assertThrows(IllegalArgumentException.class, () -> sqlDatabase.delete(null));
+        Exception e =assertThrows(Exception.class, () -> sqlDatabase.delete(null));
+
+        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
     }
 
-    @Test
+    @Test()
     void deleteMethodShouldThrowExceptionForDeletingNotExistingInvoice() throws DatabaseOperationException {
         assertThrows(DatabaseOperationException.class, () -> sqlDatabase.delete(listOfInvoicesAddedToDatabase.size()+1L));
     }
@@ -160,7 +166,9 @@ public class PostgreSqlContainerLiveTest {
 
     @Test
     void getByIdMethodShouldThrowExceptionForNullId() {
-        assertThrows(IllegalArgumentException.class, () -> sqlDatabase.getById(null));
+        Exception e =assertThrows(Exception.class, () -> sqlDatabase.getById(null));
+
+        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
     }
 
     @Test
@@ -217,7 +225,9 @@ public class PostgreSqlContainerLiveTest {
 
     @Test
     void existsMethodShouldThrowExceptionForNullId() {
-        assertThrows(IllegalArgumentException.class, () -> sqlDatabase.exists(null));
+        Exception e =assertThrows(Exception.class, () -> sqlDatabase.exists(null));
+
+        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
     }
 
     @Test

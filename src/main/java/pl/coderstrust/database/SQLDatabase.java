@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataAccessException;
@@ -19,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import pl.coderstrust.database.mapper.InvoiceEntriesRowMapper;
 import pl.coderstrust.database.mapper.InvoiceRowMapper;
 import pl.coderstrust.model.Company;
 import pl.coderstrust.model.Invoice;
@@ -30,9 +32,12 @@ public class SQLDatabase implements Database {
     private static final String ENCODING = "UTF-8";
     private final JdbcTemplate jdbcTemplate;
     private final String GET_BY_ID = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GET_BY_ID.sql"), ENCODING);
+    private final String GETINVOICE_BY_ID = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GETINVOICEBYID.sql"), ENCODING);
     private final String GET_BY_NUMBER = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GET_BY_NUMBER.sql"), ENCODING);
     private final String GET_ALL = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GET_ALL.sql"), ENCODING);
+    private final String GET_ALL_INVOICES = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GET_ALL_INVOICES.sql"), ENCODING);
     private final String DELETE_ALL_DATA = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/DELETE_ALL_DATA.sql"), ENCODING);
+    private final String GET_ALL_INVOICE_ENTRIES = FileUtils.readFileToString(new File("src/main/resources/sqlScripts/GETALLINVOICE_ENTRIES.sql"), ENCODING);
 
     @Autowired
     public SQLDatabase(JdbcTemplate jdbcTemplate) throws IOException {
@@ -69,7 +74,9 @@ public class SQLDatabase implements Database {
             throw new IllegalArgumentException("Id cannot be null.");
         }
         try {
-            if(jdbcTemplate.update("DELETE FROM invoice_entries WHERE invoice_id=?", id)==0)
+            if(jdbcTemplate.update("DELETE FROM invoice_entries WHERE invoice_id=?", id)==0){
+                throw new DatabaseOperationException("An error occured during deleting invoice by Id");
+            }
             jdbcTemplate.update("DELETE FROM invoice WHERE id=?", id);
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseOperationException("An error occured during deleting invoice by Id");
@@ -84,7 +91,7 @@ public class SQLDatabase implements Database {
             throw new IllegalArgumentException("Id cannot be null.");
         }
         try {
-            Optional<Invoice>invoice=jdbcTemplate.query(GET_BY_ID, new Object[] {id}, new InvoiceRowMapper()).stream().findFirst();
+            Optional<Invoice>invoice=jdbcTemplate.query(GETINVOICE_BY_ID, new Object[] {id}, new InvoiceRowMapper()).stream().map(i -> buildInvoice(i,getInvoiceEntries(i.getId()))).findFirst();
             if(invoice.isPresent()){
                 return invoice;
             }
@@ -113,7 +120,7 @@ public class SQLDatabase implements Database {
     @Override
     public Collection<Invoice> getAll() throws DatabaseOperationException {
         try {
-            return jdbcTemplate.query(GET_ALL, new InvoiceRowMapper()).stream().distinct().collect(Collectors.toList());
+            return jdbcTemplate.query(GET_ALL_INVOICES, new InvoiceRowMapper()).stream().map(i -> buildInvoice(i,getInvoiceEntries(i.getId()))).collect(Collectors.toList());
         } catch (DataAccessException e) {
             throw new DatabaseOperationException("An error occured during getting all invoices from database");
         }
@@ -234,6 +241,18 @@ public class SQLDatabase implements Database {
             .build();
     }
 
+    private Invoice buildInvoice(Invoice invoice, List<InvoiceEntry> invoiceEntries) {
+        return Invoice.builder()
+            .withId(invoice.getId())
+            .withEntries(invoiceEntries)
+            .withNumber(invoice.getNumber())
+            .withBuyer(invoice.getBuyer())
+            .withSeller(invoice.getSeller())
+            .withDueDate(invoice.getDueDate())
+            .withIssuedDate(invoice.getIssuedDate())
+            .build();
+    }
+
     private Company buildCompany(Company company, Long id) {
         return Company.builder()
             .withId(id)
@@ -258,4 +277,7 @@ public class SQLDatabase implements Database {
             .build();
     }
 
+    private List<InvoiceEntry> getInvoiceEntries(Long invoiceId){
+       return jdbcTemplate.query(GET_ALL_INVOICE_ENTRIES, new Object[] {invoiceId}, new InvoiceEntriesRowMapper());
+    }
 }

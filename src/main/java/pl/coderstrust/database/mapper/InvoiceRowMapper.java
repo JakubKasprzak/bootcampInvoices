@@ -12,22 +12,8 @@ import pl.coderstrust.model.Vat;
 
 public class InvoiceRowMapper implements RowMapper<Invoice> {
 
-    List<InvoiceEntry> entries;
-    long invoiceId;
-
     @Override
     public Invoice mapRow(ResultSet rs, int rowNum) throws SQLException {
-        if(invoiceId==0){
-            invoiceId=rs.getLong("ID");
-        }
-        if(invoiceId==rs.getLong("ID")){
-            entries.add(getInvoiceEntry(rs));
-        }
-        if(invoiceId!=rs.getLong("ID")){
-            invoiceId=rs.getLong("ID");
-            entries=new ArrayList<>();
-            entries.add(getInvoiceEntry(rs));
-        }
         return Invoice
             .builder()
             .withId(rs.getLong("ID"))
@@ -36,12 +22,7 @@ public class InvoiceRowMapper implements RowMapper<Invoice> {
             .withNumber(rs.getString("number"))
             .withIssuedDate(rs.getDate("issued_date").toLocalDate())
             .withDueDate(rs.getDate("due_date").toLocalDate())
-            .withEntries(entries)
             .build();
-    }
-
-    public InvoiceRowMapper() {
-        entries = new ArrayList<>();
     }
 
     private Company getCompanyBuyer(ResultSet rs) throws SQLException {
@@ -68,15 +49,4 @@ public class InvoiceRowMapper implements RowMapper<Invoice> {
             .build();
     }
 
-    private InvoiceEntry getInvoiceEntry(ResultSet rs) throws SQLException {
-        return InvoiceEntry.builder()
-            .withId(rs.getLong("id"))
-            .withDescription(rs.getString("description"))
-            .withQuantity(rs.getLong("quantity"))
-            .withPrice(rs.getBigDecimal("price"))
-            .withNetValue(rs.getBigDecimal("net_value"))
-            .withGrossValue(rs.getBigDecimal("gross_value"))
-            .withVatRate(Vat.getVatType(rs.getFloat("vat_rate")))
-            .build();
-    }
 }
