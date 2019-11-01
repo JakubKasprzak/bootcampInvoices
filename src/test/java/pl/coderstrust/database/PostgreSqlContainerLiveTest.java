@@ -109,8 +109,8 @@ public class PostgreSqlContainerLiveTest {
     }
 
     @Test
-    void setTestedInvoice(){
-
+    void constructorShouldThrowExceptionForNullJdbcTemplate() {
+        assertThrows(IllegalArgumentException.class, () -> new SQLDatabase(null));
     }
 
     @Test
@@ -118,9 +118,10 @@ public class PostgreSqlContainerLiveTest {
         //Given
         Invoice givenInvoice=InvoiceGenerator.generateRandomInvoice();
         //When
-        Invoice expectedInvoice=sqlDatabase.save(givenInvoice);
+        Invoice actual=sqlDatabase.save(givenInvoice);
+        Invoice expected=buildInvoice(actual.getId(),givenInvoice,actual.getBuyer(),actual.getSeller(),actual.getEntries());
         //Then
-        assertEquals(jdbcTemplate.queryForObject("SELECT max(id) FROM INVOICE",Long.class),expectedInvoice.getId());
+        assertEquals(expected,actual);
     }
 
     @Test
@@ -136,7 +137,7 @@ public class PostgreSqlContainerLiveTest {
         sqlDatabase.delete(testedInvoice.getId());
 
         //Then
-        assertFalse(jdbcTemplate.queryForObject("SELECT EXISTS(SELECT ID FROM invoice WHERE ID=?)", new Object[] {testedInvoice.getId()}, Boolean.class));
+        assertFalse(jdbcTemplate.queryForObject("SELECT EXISTS(SELECT invoice_id FROM invoice_entries WHERE invoice_id=?)", new Object[] {testedInvoice.getId()}, Boolean.class));
     }
 
     @Test
@@ -148,20 +149,25 @@ public class PostgreSqlContainerLiveTest {
 
     @Test()
     void deleteMethodShouldThrowExceptionForDeletingNotExistingInvoice() throws DatabaseOperationException {
-        assertThrows(DatabaseOperationException.class, () -> sqlDatabase.delete(listOfInvoicesAddedToDatabase.size()+1L));
+        assertThrows(DatabaseOperationException.class, () -> sqlDatabase.delete(listOfInvoicesAddedToDatabase.size() + 1L));
     }
 
     @Test
     void getByIdMethodShouldReturnInvoiceById() throws DatabaseOperationException {
         //When
-        Optional<Invoice> expectedInvoice=sqlDatabase.getById(testedInvoice.getId());
+        Optional<Invoice> actualInvoice = sqlDatabase.getById(testedInvoice.getId());
 
         //Then
-        assertEquals(expectedInvoice.get(),testedInvoice);
+        assertEquals(testedInvoice,actualInvoice.get());
     }
 
     @Test
     void getByIdMethodShouldReturnEmptyOptionalWhenNonExistingInvoiceIsGotById() throws DatabaseOperationException {
+        //When
+        Optional<Invoice> actualInvoice = sqlDatabase.getById(listOfInvoicesAddedToDatabase.size() + 1L);
+
+        //Then
+        assertTrue(actualInvoice.isEmpty());
     }
 
     @Test
@@ -174,28 +180,36 @@ public class PostgreSqlContainerLiveTest {
     @Test
     void getByNumberMethodShouldReturnInvoiceByNumber() throws DatabaseOperationException {
         //When
-        Optional<Invoice> expectedInvoice=sqlDatabase.getByNumber(testedInvoice.getNumber());
+        Optional<Invoice> actualInvoice = sqlDatabase.getByNumber(testedInvoice.getNumber());
 
         //Then
-        assertEquals(expectedInvoice.get(),testedInvoice);
+        assertEquals(testedInvoice, actualInvoice.get());
     }
 
     @Test
     void getByNumberMethodShouldReturnEmptyOptionalWhenNonExistingInvoiceIsGotByNumber() throws DatabaseOperationException {
         //When
-        Optional<Invoice>expected=sqlDatabase.getByNumber("No existent number");
+        Optional<Invoice> actualInvoice=sqlDatabase.getByNumber("No existent number");
 
         //Then
-        assertEquals(Optional.empty(),expected);
+        assertTrue(actualInvoice.isEmpty());
     }
+
+    @Test
+    void getByNumberMethodShouldThrowExceptionForNullId() {
+        Exception e =assertThrows(Exception.class, () -> sqlDatabase.getByNumber(null));
+
+        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
+    }
+
     @Test
     void getAllMethodShouldReturnAllInvoices() throws DatabaseOperationException {
         //Given
-        Collection<Invoice>givenListOfInvoices=listOfInvoicesAddedToDatabase;
+        Collection<Invoice> expectedListOfInvoices = listOfInvoicesAddedToDatabase;
         //When
-        Collection<Invoice> expectedListOfInvoices=sqlDatabase.getAll();
+        Collection<Invoice> actualListOfInvoices = sqlDatabase.getAll();
         //Then
-        assertEquals(givenListOfInvoices,expectedListOfInvoices);
+        assertEquals(expectedListOfInvoices, actualListOfInvoices);
     }
 
     @Test
@@ -204,40 +218,34 @@ public class PostgreSqlContainerLiveTest {
         sqlDatabase.deleteAll();
 
         //Then
-        assertEquals(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM INVOICE",Object.class),0L);
+        assertFalse(jdbcTemplate.queryForObject("SELECT EXISTS(SELECT *FROM invoice,invoice_entry,invoice_entries,company)", Boolean.class));
     }
 
     @Test
     void existsMethodShouldReturnTrueForExistingInvoice() throws DatabaseOperationException {
-        //When
-        boolean expected = sqlDatabase.exists(testedInvoice.getId());
-        //Then
-        assertTrue(expected);
+        assertTrue(sqlDatabase.exists(testedInvoice.getId()));
     }
 
     @Test
     void existsMethodShouldReturnFalseForNotExistingInvoice() throws DatabaseOperationException {
-        //When
-        boolean expected = sqlDatabase.exists(100L);
-        //Then
-        assertFalse(expected);
+        assertFalse(sqlDatabase.exists(Long.valueOf(listOfInvoicesAddedToDatabase.size()+1)));
     }
 
     @Test
     void existsMethodShouldThrowExceptionForNullId() {
-        Exception e =assertThrows(Exception.class, () -> sqlDatabase.exists(null));
+        Exception e = assertThrows(Exception.class, () -> sqlDatabase.exists(null));
 
-        assertEquals(IllegalArgumentException.class,e.getCause().getClass());
+        assertEquals(IllegalArgumentException.class, e.getCause().getClass());
     }
 
     @Test
     void countMethodShouldReturnNumberOfInvoices() throws DatabaseOperationException {
         //Given
-        int numberOfInvoices=listOfInvoicesAddedToDatabase.size();
+        long expected = listOfInvoicesAddedToDatabase.size();
         //When
-        long expectedNumberofInvoices= sqlDatabase.count();
+        long actual = sqlDatabase.count();
         //Then
-        assertEquals(numberOfInvoices,expectedNumberofInvoices);
+        assertEquals(expected, actual);
     }
 
     private Invoice buildInvoice(long invoiceId, Invoice invoice, Company buyer, Company seller, List<InvoiceEntry> invoiceEntries) {
