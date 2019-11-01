@@ -16,7 +16,7 @@ public class TestDataBaseConfiguration {
         return postgreSQLContainer;
     }
     @Bean
-    public DataSource postgresqlDataSource(final PostgreSQLContainer postgreSQLContainer) {
+    public DataSource postgresqlContainerDataSource(final PostgreSQLContainer postgreSQLContainer) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(postgreSQLContainer.getJdbcUrl());
         dataSource.setUsername(postgreSQLContainer.getUsername());

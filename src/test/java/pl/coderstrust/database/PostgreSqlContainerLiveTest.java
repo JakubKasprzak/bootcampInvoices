@@ -64,75 +64,6 @@ public class PostgreSqlContainerLiveTest {
     public PostgreSqlContainerLiveTest() throws IOException {
     }
 
-    private Invoice buildInvoice(long invoiceId, Invoice invoice, Company buyer, Company seller, List<InvoiceEntry> invoiceEntries) {
-        return Invoice.builder()
-            .withId(invoiceId)
-            .withEntries(invoiceEntries)
-            .withNumber(invoice.getNumber())
-            .withBuyer(buyer)
-            .withSeller(seller)
-            .withDueDate(invoice.getDueDate())
-            .withIssuedDate(invoice.getIssuedDate())
-            .build();
-    }
-
-    private Company buildCompany(long id, Company company) {
-        return Company.builder()
-            .withId(id)
-            .withAccountNumber(company.getAccountNumber())
-            .withAddress(company.getAddress())
-            .withEmail(company.getEmail())
-            .withName(company.getName())
-            .withPhoneNumber(company.getPhoneNumber())
-            .withTaxId(company.getTaxId())
-            .build();
-    }
-
-    private InvoiceEntry buildInvoiceEntry(Long id, InvoiceEntry invoiceEntry) {
-        return InvoiceEntry.builder()
-            .withId(id)
-            .withDescription(invoiceEntry.getDescription())
-            .withGrossValue(invoiceEntry.getGrossValue())
-            .withNetValue(invoiceEntry.getNetValue())
-            .withPrice(invoiceEntry.getPrice())
-            .withQuantity(invoiceEntry.getQuantity())
-            .withVatRate(invoiceEntry.getVatRate())
-            .build();
-    }
-
-    private Map mapCompany(Company company) {
-        return  Map.of(
-            "account_number",company.getAccountNumber(),
-            "address",company.getAddress(),
-            "email",company.getEmail(),
-            "name",company.getName(),
-            "phone_number",company.getPhoneNumber(),
-            "tax_id",company.getTaxId());
-    }
-
-    private Map mapInvoice(Invoice invoice,Number buyerKey,Number sellerKey) {
-        return Map.of(
-            "due_date",invoice.getDueDate(),
-            "issued_date",invoice.getIssuedDate(),
-            "number",invoice.getNumber(),
-            "buyer_id",buyerKey,
-            "seller_id",sellerKey);
-    }
-
-    private Map mapInvoiceEntry(InvoiceEntry invoiceEntry) {
-        return Map.of(
-            "description",invoiceEntry.getDescription(),
-            "gross_value",invoiceEntry.getGrossValue(),
-            "net_value",invoiceEntry.getNetValue(),
-            "price",invoiceEntry.getPrice(),
-            "quantity",invoiceEntry.getQuantity(),
-            "vat_rate",invoiceEntry.getVatRate().getValue());
-    }
-    private Map mapInvoiceEntries(Number invoiceKeyEntry,Number invoiceKey) {
-        return Map.of("invoice_id",invoiceKey,
-            "entries_id",invoiceKeyEntry);
-    }
-
     @BeforeEach
     void prepareDatabaseForTest() throws IOException {
 
@@ -240,6 +171,7 @@ public class PostgreSqlContainerLiveTest {
         //Then
         assertEquals(expectedInvoice.get(),testedInvoice);
     }
+
     @Test
     void getByNumberMethodShouldReturnEmptyOptionalWhenNonExistingInvoiceIsGotByNumber() throws DatabaseOperationException {
         //When
@@ -248,7 +180,6 @@ public class PostgreSqlContainerLiveTest {
         //Then
         assertEquals(Optional.empty(),expected);
     }
-
     @Test
     void getAllMethodShouldReturnAllInvoices() throws DatabaseOperationException {
         //Given
@@ -297,5 +228,74 @@ public class PostgreSqlContainerLiveTest {
         long expectedNumberofInvoices= sqlDatabase.count();
         //Then
         assertEquals(numberOfInvoices,expectedNumberofInvoices);
+    }
+
+    private Invoice buildInvoice(long invoiceId, Invoice invoice, Company buyer, Company seller, List<InvoiceEntry> invoiceEntries) {
+        return Invoice.builder()
+            .withId(invoiceId)
+            .withEntries(invoiceEntries)
+            .withNumber(invoice.getNumber())
+            .withBuyer(buyer)
+            .withSeller(seller)
+            .withDueDate(invoice.getDueDate())
+            .withIssuedDate(invoice.getIssuedDate())
+            .build();
+    }
+
+    private Company buildCompany(long id, Company company) {
+        return Company.builder()
+            .withId(id)
+            .withAccountNumber(company.getAccountNumber())
+            .withAddress(company.getAddress())
+            .withEmail(company.getEmail())
+            .withName(company.getName())
+            .withPhoneNumber(company.getPhoneNumber())
+            .withTaxId(company.getTaxId())
+            .build();
+    }
+
+    private InvoiceEntry buildInvoiceEntry(Long id, InvoiceEntry invoiceEntry) {
+        return InvoiceEntry.builder()
+            .withId(id)
+            .withDescription(invoiceEntry.getDescription())
+            .withGrossValue(invoiceEntry.getGrossValue())
+            .withNetValue(invoiceEntry.getNetValue())
+            .withPrice(invoiceEntry.getPrice())
+            .withQuantity(invoiceEntry.getQuantity())
+            .withVatRate(invoiceEntry.getVatRate())
+            .build();
+    }
+
+    private Map mapCompany(Company company) {
+        return  Map.of(
+            "account_number",company.getAccountNumber(),
+            "address",company.getAddress(),
+            "email",company.getEmail(),
+            "name",company.getName(),
+            "phone_number",company.getPhoneNumber(),
+            "tax_id",company.getTaxId());
+    }
+
+    private Map mapInvoice(Invoice invoice,Number buyerKey,Number sellerKey) {
+        return Map.of(
+            "due_date",invoice.getDueDate(),
+            "issued_date",invoice.getIssuedDate(),
+            "number",invoice.getNumber(),
+            "buyer_id",buyerKey,
+            "seller_id",sellerKey);
+    }
+
+    private Map mapInvoiceEntry(InvoiceEntry invoiceEntry) {
+        return Map.of(
+            "description",invoiceEntry.getDescription(),
+            "gross_value",invoiceEntry.getGrossValue(),
+            "net_value",invoiceEntry.getNetValue(),
+            "price",invoiceEntry.getPrice(),
+            "quantity",invoiceEntry.getQuantity(),
+            "vat_rate",invoiceEntry.getVatRate().getValue());
+    }
+    private Map mapInvoiceEntries(Number invoiceKeyEntry,Number invoiceKey) {
+        return Map.of("invoice_id",invoiceKey,
+            "entries_id",invoiceKeyEntry);
     }
 }
