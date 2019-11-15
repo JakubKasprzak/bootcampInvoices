@@ -40,7 +40,7 @@ public interface HibernateModelMapper {
     @Mapping(target = "withAccountNumber", source = "accountNumber")
     @Mapping(target = "withPhoneNumber", source = "phoneNumber")
     @Mapping(target = "withEmail", source = "email")
-    HibernateCompany mapToHibernateIComapny(Company company);
+    HibernateCompany mapToHibernateCompany(Company company);
 
     @Mapping(target = "withId", source = "id")
     @Mapping(target = "withName", source = "name")
@@ -49,7 +49,7 @@ public interface HibernateModelMapper {
     @Mapping(target = "withAccountNumber", source = "accountNumber")
     @Mapping(target = "withPhoneNumber", source = "phoneNumber")
     @Mapping(target = "withEmail", source = "email")
-    Company mapToComapny(HibernateCompany company);
+    Company mapToCompany(HibernateCompany company);
 
     @Mapping(target = "withId", source = "id")
     @Mapping(target = "withDescription", source = "description")

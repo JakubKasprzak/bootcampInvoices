@@ -20,7 +20,7 @@ class InvoicePdfServiceTest {
 
     @Test
     void shouldThrowExceptionForNullInvoice() {
-        assertThrows(IllegalArgumentException.class, () -> invoicePdfService.createPdf(null));
+        assertThrows(IllegalArgumentException.class, () -> InvoicePdfService.createPdf(null));
     }
 
     @Test
@@ -29,7 +29,7 @@ class InvoicePdfServiceTest {
         Invoice invoice = InvoiceGenerator.generateRandomInvoice();
 
         //When
-        byte[] result = invoicePdfService.createPdf(invoice);
+        byte[] result = InvoicePdfService.createPdf(invoice);
 
         //Then
         assertNotNull(result);

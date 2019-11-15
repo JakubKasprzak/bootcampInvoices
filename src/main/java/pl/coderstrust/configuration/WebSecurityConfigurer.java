@@ -24,6 +24,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+            .antMatcher("/invoices/**")
             .cors()
             .disable()
             .csrf()

@@ -1,9 +1,5 @@
 package pl.coderstrust.controller;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -33,7 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.coderstrust.generators.InvoiceGenerator;
 import pl.coderstrust.model.Invoice;
 import pl.coderstrust.service.InvoiceEmailService;
-import pl.coderstrust.service.InvoicePdfService;
 import pl.coderstrust.service.InvoiceService;
 import pl.coderstrust.service.ServiceOperationException;
 
@@ -48,9 +43,6 @@ class InvoiceControllerTest {
     @MockBean
     private InvoiceEmailService invoiceEmailService;
 
-    @MockBean
-    private InvoicePdfService invoicePdfService;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -58,8 +50,6 @@ class InvoiceControllerTest {
     private ObjectMapper mapper;
 
     String url = "/invoices/";
-    String urlPdf = "/invoices/pdf/";
-    byte[] invoiceAsPdf = "xc45#2f".getBytes();
 
     @Test
     @WithMockUser(roles = "InvalidRole")
@@ -69,9 +59,9 @@ class InvoiceControllerTest {
         doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
 
         //When
-        mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get(String.format("%s%d",url,invoiceToGet.getId()))
+            .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isForbidden());
 
         //Then
         verify(invoiceService, never()).getById(invoiceToGet.getId());
@@ -85,10 +75,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
+            .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
 
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
@@ -102,11 +92,11 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId()))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isNotAcceptable());
+            .accept(MediaType.APPLICATION_ATOM_XML))
+            .andExpect(status().isNotAcceptable());
 
         //Then
-        verify(invoiceService, never()).getById(invoiceToGet.getId());
+        verify(invoiceService, never()).getAll();
     }
 
     @Test
@@ -117,7 +107,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId())))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
@@ -131,73 +121,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%d", url, invoiceToGet.getId())))
-                .andExpect(status().isInternalServerError());
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).getById(invoiceToGet.getId());
-    }
-
-    @Test
-    void shouldReturnInvoiceAsPdfById() throws Exception {
-        //Given
-        Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
-        doReturn(Optional.of(invoiceToGet)).when(invoiceService).getById(invoiceToGet.getId());
-        doReturn(invoiceAsPdf).when(invoicePdfService).createPdf(invoiceToGet);
-
-        //When
-        mockMvc.perform(get(String.format("%s%d", "/invoices/pdf/", invoiceToGet.getId()))
-                .accept(MediaType.APPLICATION_PDF_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF_VALUE))
-                .andExpect(content().bytes(invoiceAsPdf));
-
-        //Then
-        assertNotNull(invoiceAsPdf);
-        assertTrue(invoiceAsPdf.length > 0);
-        verify(invoiceService, times(1)).getById(invoiceToGet.getId());
-        verify(invoicePdfService, times(1)).createPdf(invoiceToGet);
-    }
-
-    @Test
-    void shouldReturnNotAcceptableStatusDuringGettingInvoiceAsPdfByIdWithNotSupportedMediaType() throws Exception {
-        //Given
-        doReturn(Optional.of(InvoiceGenerator.generateRandomInvoice())).when(invoiceService).getById(1L);
-
-        //When
-        mockMvc.perform(get(String.format("%s%d", urlPdf, 1L))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isNotAcceptable());
-
-        //Then
-        verify(invoiceService, never()).getById(anyLong());
-    }
-
-    @Test
-    void shouldReturnNotFoundStatusWhileGettingNonExistingInvoiceAsPdfById() throws Exception {
-        //Given
-        long id = 1L;
-        doReturn(Optional.empty()).when(invoiceService).getById(id);
-
-        //When
-        mockMvc.perform(get(String.format("%s%d", urlPdf, id)))
-                .andExpect(status().isNotFound());
-
-        //Then
-        verify(invoiceService, times(1)).getById(id);
-    }
-
-    @Test
-    void shouldReturnInternalServerErrorStatusDuringGettingInvoiceAsPdfByIdWhenSomethingWentWrongOnServer() throws Exception {
-        //Given
-        long id = 1L;
-        doThrow(ServiceOperationException.class).when(invoiceService).getById(id);
-
-        //When
-        mockMvc.perform(get(String.format("%s%d", urlPdf, id)))
-                .andExpect(status().isInternalServerError());
-
-        //Then
-        verify(invoiceService, times(1)).getById(id);
     }
 
     @Test
@@ -209,9 +136,9 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(mapper.writeValueAsString(invoiceToGet)));
 
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
@@ -221,7 +148,7 @@ class InvoiceControllerTest {
     void shouldReturnBadRequestStatusWhileGettingInvoiceWithNullNumber() throws Exception {
         //When
         mockMvc.perform(get(String.format("%s%d", url, null)))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
         //Then
         verify(invoiceService, never()).getByNumber(null);
@@ -236,7 +163,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
-                .andExpect(status().isNotFound());
+            .andExpect(status().isNotFound());
 
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
@@ -251,8 +178,8 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isNotAcceptable());
+            .accept(MediaType.APPLICATION_ATOM_XML))
+            .andExpect(status().isNotAcceptable());
 
         //Then
         verify(invoiceService, never()).getByNumber(invoiceToGet.getNumber());
@@ -267,86 +194,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(String.format("%s%s", url, endPoint)))
-                .andExpect(status().isInternalServerError());
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
-    }
-
-    @Test
-    void shouldReturnInvoiceAsPdfByNumber() throws Exception {
-        //Given
-        Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
-        String endPoint = String.format("byNumber?number=%s", invoiceToGet.getNumber());
-        doReturn(Optional.of(invoiceToGet)).when(invoiceService).getByNumber(invoiceToGet.getNumber());
-        doReturn(invoiceAsPdf).when(invoicePdfService).createPdf(invoiceToGet);
-
-        //When
-        mockMvc.perform(get(String.format("%s%s", "/invoices/pdf/", endPoint))
-                .accept(MediaType.APPLICATION_PDF_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF_VALUE))
-                .andExpect(content().bytes(invoiceAsPdf));
-
-        //Then
-        assertNotNull(invoiceAsPdf);
-        assertTrue(invoiceAsPdf.length > 0);
-        verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
-        verify(invoicePdfService, times(1)).createPdf(invoiceToGet);
-    }
-
-    @Test
-    void shouldReturnBadRequestStatusWhileGettingInvoiceAsPdfWithNullNumber() throws Exception {
-        //When
-        mockMvc.perform(get(String.format("%s%d", urlPdf, null)))
-                .andExpect(status().isBadRequest());
-
-        //Then
-        verify(invoiceService, never()).getByNumber(anyString());
-    }
-
-    @Test
-    void shouldReturnNotFoundStatusWhileGettingNonExistingInvoiceAsPdfByNumber() throws Exception {
-        //Given
-        Invoice invoiceToGet = InvoiceGenerator.generateRandomInvoice();
-        doReturn(Optional.empty()).when(invoiceService).getByNumber(invoiceToGet.getNumber());
-        String endPoint = String.format("byNumber?number=%s", invoiceToGet.getNumber());
-
-        //When
-        mockMvc.perform(get(String.format("%s%s", urlPdf, endPoint)))
-                .andExpect(status().isNotFound());
-
-        //Then
-        verify(invoiceService, times(1)).getByNumber(invoiceToGet.getNumber());
-    }
-
-    @Test
-    void shouldReturnNotAcceptableStatusDuringGettingInvoiceAsPdfByNumberWithNotSupportedMediaType() throws Exception {
-        //Given
-        String endPoint = "byNumber?number=asdasd";
-
-        //When
-        mockMvc.perform(get(String.format("%s%s", urlPdf, endPoint))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isNotAcceptable());
-
-        //Then
-        verify(invoiceService, never()).getByNumber(anyString());
-    }
-
-    @Test
-    void shouldReturnInternalServerErrorStatusDuringGettingInvoiceAsPdfByNumberWhenSomethingWentWrongOnServer() throws Exception {
-        //Given
-        String number = "asdasd";
-        doThrow(ServiceOperationException.class).when(invoiceService).getByNumber(number);
-        String endPoint = String.format("byNumber?number=%s", number);
-
-        //When
-        mockMvc.perform(get(String.format("%s%s", urlPdf, endPoint)))
-                .andExpect(status().isInternalServerError());
-
-        //Then
-        verify(invoiceService, times(1)).getByNumber(number);
     }
 
     @Test
@@ -358,7 +209,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId())))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
@@ -374,10 +225,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToDelete))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToDelete))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
@@ -393,10 +244,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(delete(String.format("%s%d", url, invoiceToDelete.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToDelete))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToDelete))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToDelete.getId());
@@ -410,7 +261,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(delete(url))
-                .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent());
 
         //Then
         verify(invoiceService, times(1)).deleteAll();
@@ -423,7 +274,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(delete(url))
-                .andExpect(status().isInternalServerError());
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).deleteAll();
@@ -437,9 +288,9 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(url))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(mapper.writeValueAsString(invoices)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(mapper.writeValueAsString(invoices)));
 
         //Then
         verify(invoiceService, times(1)).getAll();
@@ -449,8 +300,8 @@ class InvoiceControllerTest {
     void shouldReturnNotAcceptableStatusDuringGettingAllInvoicesWithNotSupportedMediaType() throws Exception {
         //When
         mockMvc.perform(get(url)
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isNotAcceptable());
+            .accept(MediaType.APPLICATION_ATOM_XML))
+            .andExpect(status().isNotAcceptable());
 
         //Then
         verify(invoiceService, never()).getAll();
@@ -463,7 +314,7 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(get(url))
-                .andExpect(status().isInternalServerError());
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).getAll();
@@ -479,10 +330,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToAdd)))
-                .andExpect(status().isCreated());
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToAdd)))
+            .andExpect(status().isCreated());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
@@ -498,10 +349,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_ATOM_XML)
-                .content(mapper.writeValueAsBytes(invoiceToAdd))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isUnsupportedMediaType());
+            .contentType(MediaType.APPLICATION_ATOM_XML)
+            .content(mapper.writeValueAsBytes(invoiceToAdd))
+            .accept(MediaType.APPLICATION_ATOM_XML))
+            .andExpect(status().isUnsupportedMediaType());
 
         //Then
         verify(invoiceService, never()).add(invoiceToAdd);
@@ -516,10 +367,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToAdd))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToAdd))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
@@ -535,10 +386,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToAdd))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToAdd))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isConflict());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
@@ -555,10 +406,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToAdd))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToAdd))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToAdd.getId());
@@ -575,11 +426,11 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToUpdate))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().json(mapper.writeValueAsString(invoiceToUpdate)));
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToUpdate))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(content().json(mapper.writeValueAsString(invoiceToUpdate)));
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());
@@ -595,10 +446,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToUpdate))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToUpdate))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isInternalServerError());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());
@@ -614,10 +465,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
-                .contentType(MediaType.APPLICATION_ATOM_XML)
-                .content(mapper.writeValueAsBytes(invoiceToUpdate))
-                .accept(MediaType.APPLICATION_ATOM_XML))
-                .andExpect(status().isUnsupportedMediaType());
+            .contentType(MediaType.APPLICATION_ATOM_XML)
+            .content(mapper.writeValueAsBytes(invoiceToUpdate))
+            .accept(MediaType.APPLICATION_ATOM_XML))
+            .andExpect(status().isUnsupportedMediaType());
 
         //Then
         verify(invoiceService, never()).update(invoiceToUpdate);
@@ -627,10 +478,10 @@ class InvoiceControllerTest {
     void shouldReturnBadRequestStatusDuringUpdatingNullAsInvoice() throws Exception {
         //When
         mockMvc.perform(put(String.format("%s%d", url, null))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsBytes(null))
-                .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(mapper.writeValueAsBytes(null))
+            .accept(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(status().isBadRequest());
 
         //Then
         verify(invoiceService, never()).update(null);
@@ -645,10 +496,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId() + 1))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToUpdate))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToUpdate))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
 
         //Then
         verify(invoiceService, never()).exists(invoiceToUpdate.getId());
@@ -664,10 +515,10 @@ class InvoiceControllerTest {
 
         //When
         mockMvc.perform(put(String.format("%s%d", url, invoiceToUpdate.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(invoiceToUpdate))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsBytes(invoiceToUpdate))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
 
         //Then
         verify(invoiceService, times(1)).exists(invoiceToUpdate.getId());

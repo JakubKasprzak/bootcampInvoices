@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,24 +23,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import pl.coderstrust.model.Invoice;
 import pl.coderstrust.service.InvoiceEmailService;
-import pl.coderstrust.service.InvoicePdfService;
 import pl.coderstrust.service.InvoiceService;
-import pl.coderstrust.service.ServiceOperationException;
 
 @RestController
-@RequestMapping("/invoices")
-@Api(value = "/invoices")
+@RequestMapping("/invoices/")
+@Api(value = "/invoices/")
 public class InvoiceController {
 
     private InvoiceService invoiceService;
     private InvoiceEmailService invoiceEmailService;
-    private InvoicePdfService invoicePdfService;
 
     @Autowired
-    public InvoiceController(InvoiceService invoiceService, InvoiceEmailService invoiceEmailService, InvoicePdfService invoicePdfService) {
+    public InvoiceController(InvoiceService invoiceService, InvoiceEmailService invoiceEmailService) {
         this.invoiceService = invoiceService;
         this.invoiceEmailService = invoiceEmailService;
-        this.invoicePdfService = invoicePdfService;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -134,26 +129,6 @@ public class InvoiceController {
         }
     }
 
-    @GetMapping(value = "/pdf/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> getByIdAsPdf(@PathVariable("id") long id) {
-        try {
-            Optional<Invoice> invoice = invoiceService.getById(id);
-            if (invoice.isPresent()) {
-                return getResponsePdfEntity(invoice.get());
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private ResponseEntity<?> getResponsePdfEntity(Invoice invoice) throws ServiceOperationException {
-        byte[] invoiceAsPdf = invoicePdfService.createPdf(invoice);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_PDF);
-        return new ResponseEntity<>(invoiceAsPdf, responseHeaders, HttpStatus.OK);
-    }
-
     @ApiOperation(value = "Find by number", notes = "Finds Invoice by given number", response = Invoice.class)
     @ApiResponses({
         @ApiResponse(code = 200, message = "OK", response = Invoice.class),
@@ -171,22 +146,6 @@ public class InvoiceController {
             Optional<Invoice> invoice = invoiceService.getByNumber(number);
             if (invoice.isPresent()) {
                 return new ResponseEntity<>(invoice.get(), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping(value = "/pdf/byNumber", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<?> getByNumberAsPdf(@RequestParam(required = false) String number) {
-        if (number == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            Optional<Invoice> invoice = invoiceService.getByNumber(number);
-            if (invoice.isPresent()) {
-                return getResponsePdfEntity(invoice.get());
             }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {

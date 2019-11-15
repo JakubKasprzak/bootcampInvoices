@@ -26,6 +26,7 @@ import org.springframework.data.domain.Example;
 import pl.coderstrust.database.hibernate.HibernateInvoice;
 import pl.coderstrust.database.hibernate.HibernateModelMapper;
 import pl.coderstrust.database.hibernate.HibernateModelMapperImpl;
+import pl.coderstrust.database.hibernate.InvoiceRepository;
 import pl.coderstrust.generators.InvoiceGenerator;
 import pl.coderstrust.model.Invoice;
 
@@ -258,6 +259,7 @@ class HibernateDatabaseTest {
 
         //then
         verify(invoiceRepository).deleteAll();
+        verify(invoiceRepository).deleteAll();
     }
 
     @Test
@@ -319,7 +321,7 @@ class HibernateDatabaseTest {
     }
 
     @Test
-    void shouldThrowDatabaseOperationExceptionWhenNonTransientDataAccessExceptionIsThrownWhenCauntingNumberOfInvoices() {
+    void shouldThrowDatabaseOperationExceptionWhenNonTransientDataAccessExceptionIsThrownWhenCountingNumberOfInvoices() {
         //given
         doThrow(new NonTransientDataAccessException("") {}).when(invoiceRepository).count();
 
