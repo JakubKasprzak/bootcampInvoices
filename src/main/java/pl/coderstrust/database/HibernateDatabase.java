@@ -11,7 +11,6 @@ import pl.coderstrust.database.hibernate.HibernateInvoice;
 import pl.coderstrust.database.hibernate.HibernateModelMapper;
 import pl.coderstrust.database.hibernate.InvoiceRepository;
 import pl.coderstrust.model.Invoice;
-;
 
 @Repository
 @ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")

@@ -280,7 +280,7 @@ class HibernateUserDatabaseTest {
         User user1 = UserGenerator.getRandomUser();
         User user2 = UserGenerator.getRandomUser();
         Collection<User> userList = List.of(user1, user2);
-        Collection<pl.coderstrust.database.hibernate.User> hibernateInvoiceList = modelMapper.mapToHibernateUser(userList);
+        Collection<pl.coderstrust.database.hibernate.User> hibernateInvoiceList = modelMapper.mapToHibernateUsers(userList);
         doReturn(hibernateInvoiceList).when(userRepository).findAll();
 
         //when
@@ -289,7 +289,7 @@ class HibernateUserDatabaseTest {
         //then
         assertEquals(gotList, userList);
         verify(userRepository).findAll();
-        }
+    }
 
     @Test
     void shouldThrowDatabaseOperationExceptionWhenNonTransientDataAccessExceptionIsThrownWhenGettingAllUsers() {

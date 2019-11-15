@@ -4,13 +4,12 @@ import java.util.Collection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
 @Mapper(componentModel = "spring")
 public interface HibernateUserModelMapper {
 
-    Collection<pl.coderstrust.database.hibernate.User> mapToHibernateUser(Collection<pl.coderstrust.model.User> users);
+    Collection<pl.coderstrust.model.User> mapToUsers(Collection<pl.coderstrust.database.hibernate.User> users);
 
-    Collection<pl.coderstrust.model.User> mapToUser(Collection<pl.coderstrust.database.hibernate.User> users);
+    Collection<pl.coderstrust.database.hibernate.User> mapToHibernateUsers(Collection<pl.coderstrust.model.User> users);
 
     @Mapping(target = "withId", source = "id")
     @Mapping(target = "withEmail", source = "email")

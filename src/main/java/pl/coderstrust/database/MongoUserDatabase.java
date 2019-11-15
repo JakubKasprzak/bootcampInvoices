@@ -105,7 +105,7 @@ public class MongoUserDatabase implements UserDatabase {
     @Override
     public Collection<User> getAll() throws DatabaseOperationException {
         try {
-            return modelMapper.mapToUser(mongoTemplate.findAll(pl.coderstrust.database.mongo.User.class));
+            return modelMapper.mapToUsers(mongoTemplate.findAll(pl.coderstrust.database.mongo.User.class));
         } catch (Exception e) {
             throw new DatabaseOperationException("An error occurred during getting all users.", e);
         }

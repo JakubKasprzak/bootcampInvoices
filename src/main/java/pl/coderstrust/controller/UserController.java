@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.Optional;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import pl.coderstrust.service.UserService;
 @RestController
 @RequestMapping("/users/")
 @Api(value = "/users/")
+@ConditionalOnProperty(name = "pl.coderstrust.database", havingValue = "hibernate")
 public class UserController {
 
     private final UserService userService;

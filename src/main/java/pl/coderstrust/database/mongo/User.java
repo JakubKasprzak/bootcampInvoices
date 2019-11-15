@@ -115,8 +115,8 @@ public class User {
             + ", name='" + name + '\''
             + ", lastName='" + lastName + '\''
             + ", active=" + active
-            + ", roles=" + roles +
-            '}';
+            + ", roles=" + roles
+            + '}';
     }
 
     public static class Builder {

@@ -87,7 +87,7 @@ public class HibernateUserDatabase implements UserDatabase {
     @Override
     public Collection<User> getAll() throws DatabaseOperationException {
         try {
-            return modelMapper.mapToUser(userRepository.findAll());
+            return modelMapper.mapToUsers(userRepository.findAll());
         } catch (NonTransientDataAccessException e) {
             throw new DatabaseOperationException("An error occurred during getting all users.", e);
         }
